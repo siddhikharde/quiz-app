@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import "./App.css"
 import { useState } from 'react'
 import questionData from "./Data"
@@ -8,17 +8,32 @@ import { toast } from 'react-hot-toast';
 
 
 function App() {
-    
+   
     const [QuestionIndex, setQuestionIndex] = useState(0);
     const currentQuestion = questionData[QuestionIndex];
-     const checkAnswer = (selectedOption, correctAnswer) => {
+    const [selectedOptionStyle, setSelectedOptionStyle] = useState({});
+     const checkAnswer = (selectedOption, correctAnswer, index) => {
         if (selectedOption === correctAnswer) {
             toast.success("Correct Answer!");
+            setSelectedOptionStyle({
+                ...selectedOptionStyle,
+                [index]: "bg-green-500 text-white"
+                
+            })
+
         } else {
             toast.error("Wrong Answer!");
+            setSelectedOptionStyle({
+                ...selectedOptionStyle,
+                [index]: "bg-red-500 text-white"
+            })
         }
      }
    
+      useEffect(()=>{
+        setSelectedOptionStyle({});
+    },[QuestionIndex]);
+    
     return (
         
         <div className=' flex flex-col items-center justify-center py-[25px] gap-[10px] bg-amber-100   '>
@@ -32,9 +47,11 @@ function App() {
                 <div className=' flex flex-col gap-[10px] mt-[20px] w-full '>
                     {currentQuestion.option.map((option, index) => (
                         <p key={index}
-                         className='text-center w-[100%] rounded-md py-[10px] text-[18px] cursor-pointer hover:bg-amber-50 hover:text-blue-600'
+                         className={`text-center w-[100%] rounded-md py-[10px] text-[18px] cursor-pointer
+                         ${selectedOptionStyle[index] || ""}`}
+                         
                         onClick={()=>{
-                            checkAnswer(option, currentQuestion.answer);
+                            checkAnswer(option, currentQuestion.answer, index);
                         }} 
                         >
                             {option}
